@@ -105,12 +105,15 @@ fun FormLayout(
     var submissionStatus by rememberSaveable { mutableStateOf("") }
     var manSelected by rememberSaveable { mutableStateOf(false) }
     var womanSelected by rememberSaveable { mutableStateOf(false) }
+    var sexSelected by rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    val SexOptions = listOf("Hombre", "Mujer")
 
     Column(
         modifier= Modifier
@@ -150,35 +153,28 @@ fun FormLayout(
                 .height(56.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Text(
                 text = "Sexo:",
                 style = MaterialTheme.typography.bodyLarge.merge(),
                 modifier = Modifier.padding(start = 1.dp)
             )
 
-            RadioButton(
-                selected = manSelected,
-                onClick = { manSelected = !manSelected },
-                modifier = Modifier.padding(start = 16.dp)
-            )
+            SexOptions.forEach{ option ->
 
-            Text(
-                text = "Hombre",
-                style = MaterialTheme.typography.bodyLarge.merge(),
-                modifier = Modifier.padding(start = 1.dp)
-            )
+                RadioButton(
+                    selected = (option == sexSelected),
+                    onClick = { sexSelected = option },
+                    modifier = Modifier.padding(start = 16.dp)
+                )
 
-            RadioButton(
-                selected = womanSelected,
-                onClick = { womanSelected = !womanSelected },
-                modifier = Modifier.padding(start = 30.dp)
-            )
+                Text(
+                    text = option,
+                    style = MaterialTheme.typography.bodyLarge.merge(),
+                    modifier = Modifier.padding(start = 1.dp)
+                )
+            }
 
-            Text(
-                text = "Mujer",
-                style = MaterialTheme.typography.bodyLarge.merge(),
-                modifier = Modifier.padding(start = 2.dp)
-            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -211,6 +207,7 @@ fun FormLayout(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+
 
 
         Button(onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() }, modifier = Modifier.fillMaxWidth()) {
