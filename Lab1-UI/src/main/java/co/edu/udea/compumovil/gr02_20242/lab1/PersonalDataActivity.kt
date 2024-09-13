@@ -1,14 +1,12 @@
 package co.edu.udea.compumovil.gr02_20242.lab1
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.DatePicker
-import android.widget.Spinner
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,9 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -28,14 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,6 +50,13 @@ class PersonalDataActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         FormScreen()
+
+                        Button(onClick = {
+                            val intent = Intent(this@PersonalDataActivity, ContactDataActivity::class.java)
+                            startActivity(intent)
+                        }) {
+                            Text("Siguiente")
+                        }
                     }
                 }
             }
@@ -71,7 +71,16 @@ fun FormScreen(lab1ViewModel: Lab1ViewModel = viewModel()){
 
     FormLayout(
         name = lab1ViewModel.name,
+        lastName = lab1ViewModel.lastName,
+        sex = lab1ViewModel.sex,
+        birthdate = lab1ViewModel.birthdate,
+        scholarity = lab1ViewModel.scholarity,
         onNameChanged = { lab1ViewModel.updateName(it) },
+        onLastNameChanged = { lab1ViewModel.updateLastName(it) },
+        onSexChanged = { lab1ViewModel.updateSex(it) },
+        onBirthdateChanged = { lab1ViewModel.updateBirthdate(it) },
+        onScholarityChanged = { lab1ViewModel.updateScholarity(it) },
+        lab1ViewModel = lab1ViewModel,
         modifier = Modifier
     )
 
@@ -80,14 +89,22 @@ fun FormScreen(lab1ViewModel: Lab1ViewModel = viewModel()){
 @Composable
 fun FormLayout(
     name: String,
+    lastName: String,
+    sex: String,
+    birthdate: String,
+    scholarity: String,
     onNameChanged: (String) -> Unit,
+    onLastNameChanged: (String) -> Unit,
+    onSexChanged: (String) -> Unit,
+    onBirthdateChanged: (String) -> Unit,
+    onScholarityChanged: (String) -> Unit,
+    lab1ViewModel: Lab1ViewModel = viewModel(),
     modifier: Modifier = Modifier
 ){
-    var nombre by remember { mutableStateOf(TextFieldValue("")) }
-    var apellido by remember { mutableStateOf(TextFieldValue("")) }
-    var submissionStatus by remember { mutableStateOf("") }
-    var isSelected by remember { mutableStateOf(false) }
-    var fechaSeleccionada by remember { mutableStateOf("") }
+
+    var submissionStatus by rememberSaveable { mutableStateOf("") }
+    var manSelected by rememberSaveable { mutableStateOf(false) }
+    var womanSelected by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -119,8 +136,8 @@ fun FormLayout(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = apellido,
-            onValueChange = { apellido = it },
+            value = lastName,
+            onValueChange = onLastNameChanged,
             label = { Text("Apellido") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -140,8 +157,8 @@ fun FormLayout(
             )
 
             RadioButton(
-                selected = isSelected,
-                onClick = { isSelected = true },
+                selected = manSelected,
+                onClick = { manSelected = !manSelected },
                 modifier = Modifier.padding(start = 16.dp)
             )
 
@@ -152,8 +169,8 @@ fun FormLayout(
             )
 
             RadioButton(
-                selected = isSelected,
-                onClick = { isSelected = true },
+                selected = womanSelected,
+                onClick = { womanSelected = !womanSelected },
                 modifier = Modifier.padding(start = 30.dp)
             )
 
@@ -170,7 +187,7 @@ fun FormLayout(
             context,
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
                 // Actualizar la fecha seleccionada
-                fechaSeleccionada = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+                onBirthdateChanged("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
             }, year, month, day
         )
 
@@ -190,43 +207,39 @@ fun FormLayout(
                 onClick = { datePickerDialog.show() },
                 modifier = Modifier.padding(start = 16.dp)
             ) {
-                Text(text = "Seleccionar fecha")
+                Text(text = "Cambiar")
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
 
 
-        Button(onClick = { submissionStatus = handleSubmit(name, apellido.text) }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() }, modifier = Modifier.fillMaxWidth()) {
             Text(text = "Guardar Formulario")
 
         }
 
+        if(manSelected){
+            lab1ViewModel.updateSex("Hombre")
+        }
+        if(womanSelected){
+            lab1ViewModel.updateSex("Mujer")
+        }
+
         if(submissionStatus.isNotEmpty()){
             Text(
-                text = submissionStatus,
-                color = if(submissionStatus == "Registro exitoso"){
-                    MaterialTheme.colorScheme.primary
+                text = if(submissionStatus == "Success"){
+                    "Registro exitoso"
                 } else {
+                    "Por favor complete los campos"
+                },
+                color = if(submissionStatus == "Error"){
                     MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.primary
                 },
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
-    }
-}
-
-
-fun handleSubmit(name: String, apellido: String): String{
-    if(name.isEmpty() || apellido.isEmpty()){
-        return "Please fill all the fields"
-    } else {
-        /**
-        println("Nombre: $nombre")
-        println("Apellido: $apellido")
-         */
-        Log.d("mensaje", "Nombre $name")
-        Log.d("mensaje", "Apellido $apellido")
-        return "Registro exitoso"
     }
 }
 

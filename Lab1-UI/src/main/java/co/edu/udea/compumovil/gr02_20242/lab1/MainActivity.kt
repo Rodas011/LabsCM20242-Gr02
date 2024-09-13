@@ -33,8 +33,9 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Greeting(name = "Android")
-
+                        Text(
+                            text = "Bienvenido"
+                        )
                         Button(onClick = {
                             val intent = Intent(this@MainActivity, PersonalDataActivity::class.java)
                             startActivity(intent)
@@ -45,21 +46,5 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Labs20242Gr02Theme {
-        Greeting("Android")
     }
 }
