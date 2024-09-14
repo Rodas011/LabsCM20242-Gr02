@@ -26,7 +26,7 @@ class Lab1ViewModel : ViewModel() {
         private set
     var birthdate by mutableStateOf("")
         private set
-    var scholarity by mutableStateOf("")
+    var scholarity by mutableStateOf("Escolaridad")
         private set
     var phone by mutableStateOf("")
         private set

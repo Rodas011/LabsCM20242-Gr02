@@ -7,6 +7,7 @@ import android.widget.DatePicker
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,8 +15,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -30,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +51,7 @@ class PersonalDataActivity : ComponentActivity() {
         setContent {
             Labs20242Gr02Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+
                     Column(
                         modifier = Modifier
                             .padding(innerPadding)
@@ -67,6 +76,8 @@ class PersonalDataActivity : ComponentActivity() {
 @Composable
 fun FormScreen(lab1ViewModel: Lab1ViewModel = viewModel()){
 
+    val escolaridades = listOf("Primaria", "Bachillerato", "Universidad")
+
     val lab1UiState by lab1ViewModel.uiState.collectAsState()
 
     FormLayout(
@@ -81,6 +92,7 @@ fun FormScreen(lab1ViewModel: Lab1ViewModel = viewModel()){
         onBirthdateChanged = { lab1ViewModel.updateBirthdate(it) },
         onScholarityChanged = { lab1ViewModel.updateScholarity(it) },
         lab1ViewModel = lab1ViewModel,
+        listaItems = escolaridades,
         modifier = Modifier
     )
 
@@ -93,6 +105,7 @@ fun FormLayout(
     sex: String,
     birthdate: String,
     scholarity: String,
+    listaItems: List<String>,
     onNameChanged: (String) -> Unit,
     onLastNameChanged: (String) -> Unit,
     onSexChanged: (String) -> Unit,
@@ -163,8 +176,8 @@ fun FormLayout(
             SexOptions.forEach{ option ->
 
                 RadioButton(
-                    selected = (option == sexSelected),
-                    onClick = { sexSelected = option },
+                    selected = (option == sex),
+                    onClick = { onSexChanged(option)},
                     modifier = Modifier.padding(start = 16.dp)
                 )
 
@@ -206,9 +219,42 @@ fun FormLayout(
                 Text(text = "Cambiar")
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
 
+        var expanded by rememberSaveable() { mutableStateOf(false) }
 
+        Box(modifier = Modifier.fillMaxWidth()) {
+
+            OutlinedButton(onClick = { expanded = true }) {
+                Text(
+                    text = scholarity,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    modifier = Modifier.weight(
+                        1f,
+                    ),
+                )
+                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                listaItems.forEach {
+                    DropdownMenuItem(text = {
+                        Text(text = it)
+                    }, onClick = {
+                        expanded = false
+                        onScholarityChanged(it)
+                    })
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() }, modifier = Modifier.fillMaxWidth()) {
             Text(text = "Guardar Formulario")
@@ -240,8 +286,11 @@ fun FormLayout(
     }
 }
 
+
+
 @Preview
 @Composable
 fun PreviewForm(){
     FormScreen()
 }
+
