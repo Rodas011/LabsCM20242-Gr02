@@ -54,21 +54,33 @@ class Lab1ViewModel : ViewModel() {
     fun updateScholarity(scholarityUpdate: String){
         scholarity = scholarityUpdate
     }
-    fun updatePhone(phoneUpdate: String){
-        phone = phoneUpdate
+    fun updatePhone(phoneUpdate: String) {
+        _uiState.update { currentState ->
+            currentState.copy(phone = phoneUpdate)
+        }
     }
-    fun updateAddress(addressUpdate: String){
-        address = addressUpdate
+    fun updateAddress(addressUpdate: String) {
+        _uiState.update { currentState ->
+            currentState.copy(address = addressUpdate)
+        }
     }
-    fun updateEmail(emailUpdate: String){
-        email = emailUpdate
+    fun updateEmail(emailUpdate: String) {
+        _uiState.update { currentState ->
+            currentState.copy(email = emailUpdate)
+        }
     }
-    fun updateCountry(countryUpdate: String){
-        country = countryUpdate
+    fun updateCountry(countryUpdate: String) {
+        _uiState.update { currentState ->
+            currentState.copy(country = countryUpdate)
+        }
     }
-    fun updateCity(cityUpdate: String){
-        city = cityUpdate
+    fun updateCity(cityUpdate: String) {
+        _uiState.update { currentState ->
+            currentState.copy(city = cityUpdate)
+        }
     }
+
+
 
     fun handleSubmitPersonalData(): String{
         if(name.isEmpty() || lastName.isEmpty() || birthdate.isEmpty()){
