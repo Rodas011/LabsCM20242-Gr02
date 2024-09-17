@@ -2,6 +2,7 @@ package co.edu.udea.compumovil.gr02_20242.lab1
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.activity.ComponentActivity
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -35,6 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -114,6 +117,7 @@ fun FormLayout(
     lab1ViewModel: Lab1ViewModel = viewModel(),
     modifier: Modifier = Modifier
 ){
+    val configuration = LocalConfiguration.current
 
     var submissionStatus by rememberSaveable { mutableStateOf("") }
     var manSelected by rememberSaveable { mutableStateOf(false) }
@@ -128,160 +132,331 @@ fun FormLayout(
 
     val SexOptions = listOf("Hombre", "Mujer")
 
-    Column(
-        modifier= Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Formulario",
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(start = 110.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = onNameChanged,
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = lastName,
-            onValueChange = onLastNameChanged,
-            label = { Text("Apellido") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = modifier
-                .padding(horizontal = 16.dp)
-                .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically
+    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-
             Text(
-                text = "Sexo:",
-                style = MaterialTheme.typography.bodyLarge.merge(),
-                modifier = Modifier.padding(start = 1.dp)
+                text = "Formulario",
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
-            SexOptions.forEach{ option ->
+            Spacer(modifier = Modifier.height(16.dp))
 
-                RadioButton(
-                    selected = (option == sex),
-                    onClick = { onSexChanged(option)},
-                    modifier = Modifier.padding(start = 16.dp)
+            Row(
+                modifier = modifier
+                    .padding(horizontal = 16.dp)
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = onNameChanged,
+                    label = { Text("Nombre") },
+                    modifier = Modifier.width(300.dp).padding(end = 16.dp)
                 )
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = onLastNameChanged,
+                    label = { Text("Apellido") },
+                    modifier = Modifier.width(300.dp).padding(start = 16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Row(
+                modifier = modifier
+                    .padding(horizontal = 16.dp)
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
                 Text(
-                    text = option,
+                    text = "Sexo:",
+                    style = MaterialTheme.typography.bodyLarge.merge(),
+                    modifier = Modifier.padding(start = 150.dp)
+                )
+
+                SexOptions.forEach { option ->
+
+                    RadioButton(
+                        selected = (option == sex),
+                        onClick = { onSexChanged(option) },
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+
+                    Text(
+                        text = option,
+                        style = MaterialTheme.typography.bodyLarge.merge(),
+                        modifier = Modifier.padding(start = 1.dp)
+                    )
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            val datePickerDialog = DatePickerDialog(
+                context,
+                { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+                    // Actualizar la fecha seleccionada
+                    onBirthdateChanged("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+                }, year, month, day
+            )
+
+            Row(
+                modifier = modifier
+                    .padding(horizontal = 150.dp)
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "Fecha de nacimiento:",
+                    style = MaterialTheme.typography.bodyLarge.merge()
+                )
+
+                Button(
+                    onClick = { datePickerDialog.show() },
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    Text(text = "Cambiar")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            var expanded by rememberSaveable() { mutableStateOf(false) }
+
+            Box(modifier = Modifier.width(300.dp).padding(start = 16.dp)) {
+
+                OutlinedButton(onClick = { expanded = true }) {
+                    Text(
+                        text = scholarity,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        modifier = Modifier.weight(
+                            1f,
+                        ),
+                    )
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    listaItems.forEach {
+                        DropdownMenuItem(text = {
+                            Text(text = it)
+                        }, onClick = {
+                            expanded = false
+                            onScholarityChanged(it)
+                        })
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(3.dp))
+
+            Button(
+                onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() },
+                modifier = Modifier.width(150.dp).align(Alignment.End)
+            ) {
+                Text(text = "Guardar")
+
+            }
+
+            if (manSelected) {
+                lab1ViewModel.updateSex("Hombre")
+            }
+            if (womanSelected) {
+                lab1ViewModel.updateSex("Mujer")
+            }
+
+            if (submissionStatus.isNotEmpty()) {
+                Text(
+                    text = if (submissionStatus == "Success") {
+                        "Registro exitoso"
+                    } else {
+                        "Por favor complete los campos"
+                    },
+                    color = if (submissionStatus == "Error") {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Formulario",
+                style = MaterialTheme.typography.headlineSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(start = 110.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = onNameChanged,
+                label = { Text("Nombre") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = lastName,
+                onValueChange = onLastNameChanged,
+                label = { Text("Apellido") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = modifier
+                    .padding(horizontal = 16.dp)
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "Sexo:",
                     style = MaterialTheme.typography.bodyLarge.merge(),
                     modifier = Modifier.padding(start = 1.dp)
                 )
+
+                SexOptions.forEach { option ->
+
+                    RadioButton(
+                        selected = (option == sex),
+                        onClick = { onSexChanged(option) },
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+
+                    Text(
+                        text = option,
+                        style = MaterialTheme.typography.bodyLarge.merge(),
+                        modifier = Modifier.padding(start = 1.dp)
+                    )
+                }
+
             }
 
-        }
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        val datePickerDialog = DatePickerDialog(
-            context,
-            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                // Actualizar la fecha seleccionada
-                onBirthdateChanged("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
-            }, year, month, day
-        )
-
-        Row(
-            modifier = modifier
-                .padding(horizontal = 16.dp)
-                .height(56.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-
-            Text(
-                text = "Fecha de nacimiento:",
-                style = MaterialTheme.typography.bodyLarge.merge()
+            val datePickerDialog = DatePickerDialog(
+                context,
+                { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+                    // Actualizar la fecha seleccionada
+                    onBirthdateChanged("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+                }, year, month, day
             )
 
-            Button(
-                onClick = { datePickerDialog.show() },
-                modifier = Modifier.padding(start = 16.dp)
+            Row(
+                modifier = modifier
+                    .padding(horizontal = 16.dp)
+                    .height(56.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Cambiar")
-            }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        var expanded by rememberSaveable() { mutableStateOf(false) }
-
-        Box(modifier = Modifier.fillMaxWidth()) {
-
-            OutlinedButton(onClick = { expanded = true }) {
                 Text(
-                    text = scholarity,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    modifier = Modifier.weight(
-                        1f,
-                    ),
+                    text = "Fecha de nacimiento:",
+                    style = MaterialTheme.typography.bodyLarge.merge()
                 )
-                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
 
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                listaItems.forEach {
-                    DropdownMenuItem(text = {
-                        Text(text = it)
-                    }, onClick = {
-                        expanded = false
-                        onScholarityChanged(it)
-                    })
+                Button(
+                    onClick = { datePickerDialog.show() },
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    Text(text = "Cambiar")
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Guardar Formulario")
+            var expanded by rememberSaveable() { mutableStateOf(false) }
 
-        }
+            Box(modifier = Modifier.fillMaxWidth()) {
 
-        if(manSelected){
-            lab1ViewModel.updateSex("Hombre")
-        }
-        if(womanSelected){
-            lab1ViewModel.updateSex("Mujer")
-        }
+                OutlinedButton(onClick = { expanded = true }) {
+                    Text(
+                        text = scholarity,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        modifier = Modifier.weight(
+                            1f,
+                        ),
+                    )
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
 
-        if(submissionStatus.isNotEmpty()){
-            Text(
-                text = if(submissionStatus == "Success"){
-                    "Registro exitoso"
-                } else {
-                    "Por favor complete los campos"
-                },
-                color = if(submissionStatus == "Error"){
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.primary
-                },
-                modifier = Modifier.padding(top = 16.dp)
-            )
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    listaItems.forEach {
+                        DropdownMenuItem(text = {
+                            Text(text = it)
+                        }, onClick = {
+                            expanded = false
+                            onScholarityChanged(it)
+                        })
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Guardar")
+
+            }
+
+            if (manSelected) {
+                lab1ViewModel.updateSex("Hombre")
+            }
+            if (womanSelected) {
+                lab1ViewModel.updateSex("Mujer")
+            }
+
+            if (submissionStatus.isNotEmpty()) {
+                Text(
+                    text = if (submissionStatus == "Success") {
+                        "Registro exitoso"
+                    } else {
+                        "Por favor complete los campos"
+                    },
+                    color = if (submissionStatus == "Error") {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
         }
     }
 }
@@ -291,6 +466,16 @@ fun FormLayout(
 @Preview
 @Composable
 fun PreviewForm(){
+    FormScreen()
+}
+
+@Preview(
+    name = "Landscape Preview",
+    widthDp = 640,  // Width for landscape mode
+    heightDp = 360  // Height for landscape mode
+)
+@Composable
+fun PreviewFormLandscape() {
     FormScreen()
 }
 
