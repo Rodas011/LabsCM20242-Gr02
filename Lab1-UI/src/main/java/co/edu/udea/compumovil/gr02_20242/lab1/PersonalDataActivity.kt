@@ -1,13 +1,8 @@
 package co.edu.udea.compumovil.gr02_20242.lab1
 
 import android.app.DatePickerDialog
-import android.content.Intent
 import android.content.res.Configuration
-import android.os.Bundle
 import android.widget.DatePicker
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
@@ -28,98 +24,90 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import co.edu.udea.compumovil.gr02_20242.lab1.ui.theme.Labs20242Gr02Theme
 import java.util.Calendar
 
-class PersonalDataActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            Labs20242Gr02Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+@Composable
+fun PersonalDataScreen(
+    onContinueClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: Lab1ViewModel,
+    submissionStatus: String
+){
+    val snackbarHostState = remember { SnackbarHostState() }
 
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ){
-                        FormScreen()
-
-                        Button(onClick = {
-                            val intent = Intent(this@PersonalDataActivity, ContactDataActivity::class.java)
-                            startActivity(intent)
-                        }) {
-                            Text("Siguiente")
-                        }
-                    }
-                }
-            }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            PersonalDataLayout(
+                onContinueClicked = onContinueClicked,
+                submissionStatus = submissionStatus,
+                name = viewModel.name,
+                lastName = viewModel.lastName,
+                sex = viewModel.sex,
+                birthdate = viewModel.birthdate,
+                scholarity = viewModel.scholarity,
+                onNameChanged = { viewModel.updateName(it) },
+                onLastNameChanged = { viewModel.updateLastName(it) },
+                onSexChanged = { viewModel.updateSex(it) },
+                onBirthdateChanged = { viewModel.updateBirthdate(it) },
+                onScholarityChanged = { viewModel.updateScholarity(it) },
+                snackbarHostState = snackbarHostState,
+                viewModel = viewModel,
+                modifier = Modifier
+            )
         }
     }
 }
 
 @Composable
-fun FormScreen(lab1ViewModel: Lab1ViewModel = viewModel()){
-
-    val escolaridades = listOf("Primaria", "Bachillerato", "Universidad")
-
-    val lab1UiState by lab1ViewModel.uiState.collectAsState()
-
-    FormLayout(
-        name = lab1ViewModel.name,
-        lastName = lab1ViewModel.lastName,
-        sex = lab1ViewModel.sex,
-        birthdate = lab1ViewModel.birthdate,
-        scholarity = lab1ViewModel.scholarity,
-        onNameChanged = { lab1ViewModel.updateName(it) },
-        onLastNameChanged = { lab1ViewModel.updateLastName(it) },
-        onSexChanged = { lab1ViewModel.updateSex(it) },
-        onBirthdateChanged = { lab1ViewModel.updateBirthdate(it) },
-        onScholarityChanged = { lab1ViewModel.updateScholarity(it) },
-        lab1ViewModel = lab1ViewModel,
-        listaItems = escolaridades,
-        modifier = Modifier
-    )
-
-}
-
-@Composable
-fun FormLayout(
+fun PersonalDataLayout(
+    onContinueClicked: () -> Unit,
+    submissionStatus: String,
     name: String,
     lastName: String,
     sex: String,
     birthdate: String,
     scholarity: String,
-    listaItems: List<String>,
     onNameChanged: (String) -> Unit,
     onLastNameChanged: (String) -> Unit,
     onSexChanged: (String) -> Unit,
     onBirthdateChanged: (String) -> Unit,
     onScholarityChanged: (String) -> Unit,
-    lab1ViewModel: Lab1ViewModel = viewModel(),
+    snackbarHostState: SnackbarHostState,
+    viewModel: Lab1ViewModel,
     modifier: Modifier = Modifier
 ){
     val configuration = LocalConfiguration.current
 
-    var submissionStatus by rememberSaveable { mutableStateOf("") }
     var manSelected by rememberSaveable { mutableStateOf(false) }
     var womanSelected by rememberSaveable { mutableStateOf(false) }
     var sexSelected by rememberSaveable { mutableStateOf("") }
@@ -131,6 +119,14 @@ fun FormLayout(
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
     val SexOptions = listOf("Hombre", "Mujer")
+    val Scholarities = listOf("Primaria", "Bachillerato", "Universidad")
+
+    var isNameTouched by remember { mutableStateOf(false) }
+    var isLastNameTouched by remember { mutableStateOf(false) }
+    var isSexTouched by remember { mutableStateOf(false) }
+    var isBirthdateTouched by remember { mutableStateOf(false) }
+    var isScholarityTouched by remember { mutableStateOf(false) }
+
 
     if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         Column(
@@ -156,8 +152,17 @@ fun FormLayout(
                 OutlinedTextField(
                     value = name,
                     onValueChange = onNameChanged,
-                    label = { Text("Nombre") },
+                    label = { Text(stringResource(R.string.name)) },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next),
+
+                    isError = isNameTouched && name.isBlank(),
+                    supportingText = { if (isNameTouched && name.isBlank()) Text(stringResource(R.string.required)) else null },
                     modifier = Modifier.width(300.dp).padding(end = 16.dp)
+                        .onFocusChanged { focusState ->
+                            isNameTouched = focusState.isFocused || focusState.hasFocus
+                        }
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -165,8 +170,17 @@ fun FormLayout(
                 OutlinedTextField(
                     value = lastName,
                     onValueChange = onLastNameChanged,
-                    label = { Text("Apellido") },
-                    modifier = Modifier.width(300.dp).padding(start = 16.dp)
+                    label = { Text(stringResource(R.string.last_name)) },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next),
+
+                    isError = isLastNameTouched && lastName.isBlank(),
+                    supportingText = { if (isLastNameTouched && lastName.isBlank()) Text(stringResource(R.string.required)) else null },
+                    modifier = Modifier.width(300.dp).padding(end = 16.dp)
+                        .onFocusChanged { focusState ->
+                            isLastNameTouched = focusState.isFocused || focusState.hasFocus
+                        }
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))
@@ -254,7 +268,7 @@ fun FormLayout(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                 ) {
-                    listaItems.forEach {
+                    Scholarities.forEach {
                         DropdownMenuItem(text = {
                             Text(text = it)
                         }, onClick = {
@@ -268,34 +282,38 @@ fun FormLayout(
             Spacer(modifier = Modifier.height(3.dp))
 
             Button(
-                onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() },
-                modifier = Modifier.width(150.dp).align(Alignment.End)
+                onClick = onContinueClicked,
+                modifier = Modifier.width(150.dp).align(Alignment.End),
             ) {
-                Text(text = "Guardar")
-
+                Text(stringResource(R.string._continue))
             }
 
             if (manSelected) {
-                lab1ViewModel.updateSex("Hombre")
+                viewModel.updateSex("Hombre")
             }
             if (womanSelected) {
-                lab1ViewModel.updateSex("Mujer")
+                viewModel.updateSex("Mujer")
             }
 
             if (submissionStatus.isNotEmpty()) {
-                Text(
-                    text = if (submissionStatus == "Success") {
-                        "Registro exitoso"
-                    } else {
-                        "Por favor complete los campos"
-                    },
-                    color = if (submissionStatus == "Error") {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    },
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+                val snackbarMessage = if (submissionStatus == "Success") {
+                    stringResource(R.string.success_message)
+                } else {
+                    stringResource(R.string.error_message)
+                }
+                if (submissionStatus == "Error") {
+                    isNameTouched = true
+                    isLastNameTouched = true
+                    isSexTouched = true
+                    isBirthdateTouched = true
+                    isScholarityTouched = true
+                }
+                LaunchedEffect(submissionStatus) {
+                    snackbarHostState.showSnackbar(
+                        message = snackbarMessage,
+                        duration = SnackbarDuration.Short
+                    )
+                }
             }
         }
     } else {
@@ -316,8 +334,17 @@ fun FormLayout(
             OutlinedTextField(
                 value = name,
                 onValueChange = onNameChanged,
-                label = { Text("Nombre") },
+                label = { Text(stringResource(R.string.name)) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next),
+
+                isError = isNameTouched && name.isBlank(),
+                supportingText = { if (isNameTouched && name.isBlank()) Text(stringResource(R.string.required)) else null },
                 modifier = Modifier.fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        isNameTouched = focusState.isFocused || focusState.hasFocus
+                    }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -325,8 +352,17 @@ fun FormLayout(
             OutlinedTextField(
                 value = lastName,
                 onValueChange = onLastNameChanged,
-                label = { Text("Apellido") },
+                label = { Text(stringResource(R.string.last_name)) },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next),
+
+                isError = isLastNameTouched && lastName.isBlank(),
+                supportingText = { if (isLastNameTouched && lastName.isBlank()) Text(stringResource(R.string.required)) else null },
                 modifier = Modifier.fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        isLastNameTouched = focusState.isFocused || focusState.hasFocus
+                    }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -377,7 +413,6 @@ fun FormLayout(
                     .height(56.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
                     text = "Fecha de nacimiento:",
                     style = MaterialTheme.typography.bodyLarge.merge()
@@ -414,7 +449,7 @@ fun FormLayout(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                 ) {
-                    listaItems.forEach {
+                    Scholarities.forEach {
                         DropdownMenuItem(text = {
                             Text(text = it)
                         }, onClick = {
@@ -428,54 +463,39 @@ fun FormLayout(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { submissionStatus = lab1ViewModel.handleSubmitPersonalData() },
+                onClick = onContinueClicked,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Guardar")
-
+                Text(stringResource(R.string._continue))
             }
 
             if (manSelected) {
-                lab1ViewModel.updateSex("Hombre")
+                viewModel.updateSex("Hombre")
             }
             if (womanSelected) {
-                lab1ViewModel.updateSex("Mujer")
+                viewModel.updateSex("Mujer")
             }
 
             if (submissionStatus.isNotEmpty()) {
-                Text(
-                    text = if (submissionStatus == "Success") {
-                        "Registro exitoso"
-                    } else {
-                        "Por favor complete los campos"
-                    },
-                    color = if (submissionStatus == "Error") {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    },
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+                val snackbarMessage = if (submissionStatus == "Success") {
+                    stringResource(R.string.success_message)
+                } else {
+                    stringResource(R.string.error_message)
+                }
+                if (submissionStatus == "Error") {
+                    isNameTouched = true
+                    isLastNameTouched = true
+                    isSexTouched = true
+                    isBirthdateTouched = true
+                    isScholarityTouched = true
+                }
+                LaunchedEffect(submissionStatus) {
+                    snackbarHostState.showSnackbar(
+                        message = snackbarMessage,
+                        duration = SnackbarDuration.Short
+                    )
+                }
             }
         }
     }
 }
-
-
-
-@Preview
-@Composable
-fun PreviewForm(){
-    FormScreen()
-}
-
-@Preview(
-    name = "Landscape Preview",
-    widthDp = 640,  // Width for landscape mode
-    heightDp = 360  // Height for landscape mode
-)
-@Composable
-fun PreviewFormLandscape() {
-    FormScreen()
-}
-

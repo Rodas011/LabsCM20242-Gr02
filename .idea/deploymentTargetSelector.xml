@@ -4,17 +4,17 @@
     <selectionStates>
       <SelectionState runConfigName="Lab1-UI">
         <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="MainActivity">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-14T01:17:27.781369500Z">
+        <DropdownSelection timestamp="2024-09-18T14:46:30.745019400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=ZT322K37CB" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=5XLBY96H7HG69PHU" />
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="MyAppPreview">
+        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>

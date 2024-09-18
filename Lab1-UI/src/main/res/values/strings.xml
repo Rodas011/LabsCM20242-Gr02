@@ -2,17 +2,24 @@
     <string name="app_name">Labs20242-Gr02</string>
     <string name="title_activity_personal_data">PersonalDataActivity</string>
     <string name="title_activity_contact_data">ContactDataActivity</string>
+    <string name="welcome">Bienvenido</string>
+    <string name="go_to_form">Ir al formulario</string>
+    <string name="personal_info">Información Personal</string>
     <string name="contact_info">Información de Contacto</string>
+    <string name="name">Nombre</string>
+    <string name="last_name">Apellido</string>
+    <string name="sex">Sexo</string>
+    <string name="birthdate">Fecha de Nacimiento</string>
+    <string name="scholarity">Escolaridad</string>
     <string name="phone">Telefono</string>
     <string name="address">Dirección</string>
     <string name="email">Email</string>
     <string name="country">Pais</string>
     <string name="city">Ciudad</string>
-    <string name="siguiente">Siguiente</string>
+    <string name="_continue">Siguiente</string>
     <string name="required">Campo requerido</string>"
     <string name="success_message">Datos guardados correctamente</string>
     <string name="error_message">Error al guardar los datos</string>
-   <string name="personal_info">Información Personal</string>
     <string name="save">Guardar</string>
 
 </resources>

@@ -55,32 +55,20 @@ class Lab1ViewModel : ViewModel() {
         scholarity = scholarityUpdate
     }
     fun updatePhone(phoneUpdate: String) {
-        _uiState.update { currentState ->
-            currentState.copy(phone = phoneUpdate)
-        }
+        phone = phoneUpdate
     }
     fun updateAddress(addressUpdate: String) {
-        _uiState.update { currentState ->
-            currentState.copy(address = addressUpdate)
-        }
+        address = addressUpdate
     }
     fun updateEmail(emailUpdate: String) {
-        _uiState.update { currentState ->
-            currentState.copy(email = emailUpdate)
-        }
+        email = emailUpdate
     }
     fun updateCountry(countryUpdate: String) {
-        _uiState.update { currentState ->
-            currentState.copy(country = countryUpdate)
-        }
+        country = countryUpdate
     }
     fun updateCity(cityUpdate: String) {
-        _uiState.update { currentState ->
-            currentState.copy(city = cityUpdate)
-        }
+        city = cityUpdate
     }
-
-
 
     fun handleSubmitPersonalData(): String{
         if(name.isEmpty() || lastName.isEmpty() || birthdate.isEmpty()){
@@ -99,19 +87,22 @@ class Lab1ViewModel : ViewModel() {
     }
 
     fun handleSubmitContactData(): String{
-        if(name.isEmpty() || lastName.isEmpty() || birthdate.isEmpty()){
-            Log.d("mensaje", "Nombre ${_uiState.value.name}")
-            Log.d("mensaje", "Apellido ${_uiState.value.lastName}")
-            Log.d("mensaje", "Sexo ${_uiState.value.sex}")
-            Log.d("mensaje", "Fecha de nacimiento ${_uiState.value.birthdate}")
-            Log.d("mensaje", "Grado académico ${_uiState.value.scholarity}")
+        if(phone.isEmpty() || email.isEmpty() || country.isEmpty()){
             return "Error"
         } else {
+            _uiState.update { currentState ->
+                currentState.copy(phone = phone, address = address, email = email, country = country, city = city)
+            }
             Log.d("mensaje", "Nombre ${_uiState.value.name}")
             Log.d("mensaje", "Apellido ${_uiState.value.lastName}")
             Log.d("mensaje", "Sexo ${_uiState.value.sex}")
             Log.d("mensaje", "Fecha de nacimiento ${_uiState.value.birthdate}")
             Log.d("mensaje", "Grado académico ${_uiState.value.scholarity}")
+            Log.d("mensaje", "Teléfono ${_uiState.value.phone}")
+            Log.d("mensaje", "Dirección ${_uiState.value.address}")
+            Log.d("mensaje", "Email ${_uiState.value.email}")
+            Log.d("mensaje", "País ${_uiState.value.country}")
+            Log.d("mensaje", "Ciudad ${_uiState.value.city}")
             return "Success"
         }
     }
