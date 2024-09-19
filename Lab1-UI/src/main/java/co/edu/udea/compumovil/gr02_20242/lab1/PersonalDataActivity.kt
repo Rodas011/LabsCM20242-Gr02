@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -42,6 +45,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -118,8 +122,8 @@ fun PersonalDataLayout(
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-    val SexOptions = listOf("Hombre", "Mujer")
-    val Scholarities = listOf("Primaria", "Bachillerato", "Universidad")
+    val SexOptions = listOf(stringResource(R.string.male), stringResource(R.string.female))
+    val Scholarities = listOf(stringResource(R.string.primary), stringResource(R.string.high_school), stringResource(R.string.college),)
 
     var isNameTouched by remember { mutableStateOf(false) }
     var isLastNameTouched by remember { mutableStateOf(false) }
@@ -135,8 +139,8 @@ fun PersonalDataLayout(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Formulario",
-                style = MaterialTheme.typography.headlineSmall,
+                text = stringResource(R.string.form),
+                style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -145,15 +149,18 @@ fun PersonalDataLayout(
 
             Row(
                 modifier = modifier
-                    .padding(horizontal = 16.dp)
-                    .height(56.dp),
+                    .height(60.dp).fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
+
                 OutlinedTextField(
                     value = name,
                     onValueChange = onNameChanged,
+                    textStyle = MaterialTheme.typography.bodyMedium,
                     label = { Text(stringResource(R.string.name)) },
                     keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next),
 
@@ -170,8 +177,10 @@ fun PersonalDataLayout(
                 OutlinedTextField(
                     value = lastName,
                     onValueChange = onLastNameChanged,
+                    textStyle = MaterialTheme.typography.bodyMedium,
                     label = { Text(stringResource(R.string.last_name)) },
                     keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next),
 
@@ -191,11 +200,16 @@ fun PersonalDataLayout(
                     .height(56.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Sex",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 150.dp, end = 5.dp)
+                )
 
                 Text(
-                    text = "Sexo:",
+                    text = stringResource(R.string.sex),
                     style = MaterialTheme.typography.bodyLarge.merge(),
-                    modifier = Modifier.padding(start = 150.dp)
                 )
 
                 SexOptions.forEach { option ->
@@ -208,7 +222,7 @@ fun PersonalDataLayout(
 
                     Text(
                         text = option,
-                        style = MaterialTheme.typography.bodyLarge.merge(),
+                        style = MaterialTheme.typography.bodyMedium.merge(),
                         modifier = Modifier.padding(start = 1.dp)
                     )
                 }
@@ -232,8 +246,15 @@ fun PersonalDataLayout(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Date",
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(start = 10.dp, end = 5.dp)
+                )
+
                 Text(
-                    text = "Fecha de nacimiento:",
+                    text = stringResource(R.string.birthdate),
                     style = MaterialTheme.typography.bodyLarge.merge()
                 )
 
@@ -241,7 +262,10 @@ fun PersonalDataLayout(
                     onClick = { datePickerDialog.show() },
                     modifier = Modifier.padding(start = 16.dp)
                 ) {
-                    Text(text = "Cambiar")
+                    Text(
+                        text = stringResource(R.string.change),
+                        style = MaterialTheme.typography.bodyMedium,
+                        )
                 }
             }
 
@@ -249,11 +273,16 @@ fun PersonalDataLayout(
 
             var expanded by rememberSaveable() { mutableStateOf(false) }
 
+
+
             Box(modifier = Modifier.width(300.dp).padding(start = 16.dp)) {
+
+
 
                 OutlinedButton(onClick = { expanded = true }) {
                     Text(
-                        text = scholarity,
+                        text =  stringResource(R.string.scholarity),
+                        style = MaterialTheme.typography.bodyLarge.merge(),
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         modifier = Modifier.weight(
@@ -270,7 +299,10 @@ fun PersonalDataLayout(
                 ) {
                     Scholarities.forEach {
                         DropdownMenuItem(text = {
-                            Text(text = it)
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium.merge(),
+                                )
                         }, onClick = {
                             expanded = false
                             onScholarityChanged(it)
@@ -285,14 +317,17 @@ fun PersonalDataLayout(
                 onClick = onContinueClicked,
                 modifier = Modifier.width(150.dp).align(Alignment.End),
             ) {
-                Text(stringResource(R.string._continue))
+                Text(
+                    stringResource(R.string._continue),
+                    style = MaterialTheme.typography.bodyMedium,
+                    )
             }
 
             if (manSelected) {
-                viewModel.updateSex("Hombre")
+                viewModel.updateSex(stringResource(R.string.male))
             }
             if (womanSelected) {
-                viewModel.updateSex("Mujer")
+                viewModel.updateSex(stringResource(R.string.female))
             }
 
             if (submissionStatus.isNotEmpty()) {
@@ -323,10 +358,10 @@ fun PersonalDataLayout(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Formulario",
-                style = MaterialTheme.typography.headlineSmall,
+                text = stringResource(R.string.form),
+                style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(start = 110.dp)
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -335,7 +370,9 @@ fun PersonalDataLayout(
                 value = name,
                 onValueChange = onNameChanged,
                 label = { Text(stringResource(R.string.name)) },
+                textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next),
 
@@ -353,7 +390,9 @@ fun PersonalDataLayout(
                 value = lastName,
                 onValueChange = onLastNameChanged,
                 label = { Text(stringResource(R.string.last_name)) },
+                textStyle = MaterialTheme.typography.bodyMedium,
                 keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next),
 
@@ -374,10 +413,17 @@ fun PersonalDataLayout(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Sex",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 1.dp, end = 5.dp)
+                )
+
                 Text(
-                    text = "Sexo:",
+                    text = stringResource(R.string.sex),
                     style = MaterialTheme.typography.bodyLarge.merge(),
-                    modifier = Modifier.padding(start = 1.dp)
+
                 )
 
                 SexOptions.forEach { option ->
@@ -390,7 +436,7 @@ fun PersonalDataLayout(
 
                     Text(
                         text = option,
-                        style = MaterialTheme.typography.bodyLarge.merge(),
+                        style = MaterialTheme.typography.bodyMedium.merge(),
                         modifier = Modifier.padding(start = 1.dp)
                     )
                 }
@@ -413,8 +459,15 @@ fun PersonalDataLayout(
                     .height(56.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Date",
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.padding(start = 10.dp, end = 5.dp)
+                )
+
                 Text(
-                    text = "Fecha de nacimiento:",
+                    text = stringResource(R.string.birthdate),
                     style = MaterialTheme.typography.bodyLarge.merge()
                 )
 
@@ -422,7 +475,10 @@ fun PersonalDataLayout(
                     onClick = { datePickerDialog.show() },
                     modifier = Modifier.padding(start = 16.dp)
                 ) {
-                    Text(text = "Cambiar")
+                    Text(
+                        text = stringResource(R.string.change),
+                        style = MaterialTheme.typography.bodyMedium,
+                        )
                 }
             }
 
@@ -434,7 +490,8 @@ fun PersonalDataLayout(
 
                 OutlinedButton(onClick = { expanded = true }) {
                     Text(
-                        text = scholarity,
+                        text = stringResource(R.string.scholarity),
+                        style = MaterialTheme.typography.bodyLarge.merge(),
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
                         modifier = Modifier.weight(
@@ -451,7 +508,10 @@ fun PersonalDataLayout(
                 ) {
                     Scholarities.forEach {
                         DropdownMenuItem(text = {
-                            Text(text = it)
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium.merge(),
+                                )
                         }, onClick = {
                             expanded = false
                             onScholarityChanged(it)
@@ -466,7 +526,10 @@ fun PersonalDataLayout(
                 onClick = onContinueClicked,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string._continue))
+                Text(
+                    stringResource(R.string._continue),
+                    style = MaterialTheme.typography.bodyMedium.merge(),
+                    )
             }
 
             if (manSelected) {

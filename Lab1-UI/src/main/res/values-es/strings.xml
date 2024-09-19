@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Labs20242-Gr02</string>
     <string name="title_activity_personal_data">PersonalDataActivity</string>
@@ -21,7 +22,7 @@
     <string name="phone">Telefono</string>
     <string name="address">Dirección</string>
     <string name="email">Email</string>
-    <string name="country">Pais</string>
+    <string name="country">País</string>
     <string name="city">Ciudad</string>
     <string name="_continue">Siguiente</string>
     <string name="required">Campo requerido</string>"

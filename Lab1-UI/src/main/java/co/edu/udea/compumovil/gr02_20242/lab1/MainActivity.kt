@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,7 +75,8 @@ fun MyApp(
                         }},
                         viewModel = viewModel, submissionStatus = contactSubmissionStatus)
                 } else {
-                    Text(text = "Gracias por completar el formulario")
+                    Text(text = stringResource(R.string.end_form),
+                        style = MaterialTheme.typography.headlineLarge,)
                 }
             }
         }
@@ -91,13 +93,17 @@ fun OnboardingScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(stringResource(R.string.welcome))
+        Text(
+            stringResource(R.string.welcome),
+            style = MaterialTheme.typography.headlineLarge,
+            )
         Button(
             modifier = Modifier
                 .padding(vertical = 24.dp),
             onClick = onContinueClicked
         ) {
-            Text(stringResource(R.string.go_to_form))
+            Text(stringResource(R.string.go_to_form),
+                style = MaterialTheme.typography.bodyMedium,)
         }
     }
 }

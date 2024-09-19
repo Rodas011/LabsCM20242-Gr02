@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Labs20242-Gr02</string>
+    <string name="title_activity_personal_data">PersonalDataActivity</string>
+    <string name="title_activity_contact_data">ContactDataActivity</string>
+    <string name="welcome">Welcome</string>
+    <string name="go_to_form">Go to Form</string>
+    <string name="personal_info">Personal Info</string>
+    <string name="contact_info">Contact Info</string>
+    <string name="form">Form</string>
+    <string name="name">Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="sex">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="birthdate">Birth Date</string>
+    <string name="change">Select</string>
+    <string name="scholarity">Level Of Education</string>
+    <string name="primary">Primary School</string>
+    <string name="high_school">High school</string>
+    <string name="college">College</string>
+    <string name="phone">Phone Number</string>
+    <string name="address">Address</string>
+    <string name="email">Email</string>
+    <string name="country">Country</string>
+    <string name="city">City</string>
+    <string name="_continue">Next</string>
+    <string name="required">Required Field</string>"
+    <string name="success_message">Your data has been saved successfully</string>
+    <string name="error_message">An error has occurred while saving data</string>
+    <string name="save">Save</string>
+    <string name="end_form">Thank you for filling the form!</string>
+</resources>
