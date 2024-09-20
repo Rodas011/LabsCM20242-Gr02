@@ -88,11 +88,11 @@ class Lab1ViewModel : ViewModel() {
             _uiState.update { currentState ->
                 currentState.copy(name = name, lastName = lastName, sex = sex, birthdate = birthdate, scholarity = scholarity)
             }
-            Log.d("mensaje", "Nombre ${_uiState.value.name}")
-            Log.d("mensaje", "Apellido ${_uiState.value.lastName}")
-            Log.d("mensaje", "Sexo ${_uiState.value.sex}")
-            Log.d("mensaje", "Fecha de nacimiento ${_uiState.value.birthdate}")
-            Log.d("mensaje", "Grado académico ${_uiState.value.scholarity}")
+            Log.d("PersonalData", "Nombre: ${_uiState.value.name}")
+            Log.d("PersonalData", "Apellido: ${_uiState.value.lastName}")
+            Log.d("PersonalData", "Sexo: ${_uiState.value.sex}")
+            Log.d("PersonalData", "Fecha de nacimiento: ${_uiState.value.birthdate}")
+            Log.d("PersonalData", "Grado académico: ${_uiState.value.scholarity}")
             return "Success"
         }
     }
@@ -104,16 +104,16 @@ class Lab1ViewModel : ViewModel() {
             _uiState.update { currentState ->
                 currentState.copy(phone = phone, address = address, email = email, country = country, city = city)
             }
-            Log.d("mensaje", "Nombre ${_uiState.value.name}")
-            Log.d("mensaje", "Apellido ${_uiState.value.lastName}")
-            Log.d("mensaje", "Sexo ${_uiState.value.sex}")
-            Log.d("mensaje", "Fecha de nacimiento ${_uiState.value.birthdate}")
-            Log.d("mensaje", "Grado académico ${_uiState.value.scholarity}")
-            Log.d("mensaje", "Teléfono ${_uiState.value.phone}")
-            Log.d("mensaje", "Dirección ${_uiState.value.address}")
-            Log.d("mensaje", "Email ${_uiState.value.email}")
-            Log.d("mensaje", "País ${_uiState.value.country}")
-            Log.d("mensaje", "Ciudad ${_uiState.value.city}")
+            Log.d("PersonalData", "Nombre: ${_uiState.value.name}")
+            Log.d("PersonalData", "Apellido: ${_uiState.value.lastName}")
+            Log.d("PersonalData", "Sexo: ${_uiState.value.sex}")
+            Log.d("PersonalData", "Fecha de nacimiento: ${_uiState.value.birthdate}")
+            Log.d("PersonalData", "Grado académico: ${_uiState.value.scholarity}")
+            Log.d("ContactData", "Teléfono: ${_uiState.value.phone}")
+            Log.d("ContactData", "Dirección: ${_uiState.value.address}")
+            Log.d("ContactData", "Email: ${_uiState.value.email}")
+            Log.d("ContactData", "País: ${_uiState.value.country}")
+            Log.d("ContactData", "Ciudad: ${_uiState.value.city}")
             return "Success"
         }
     }

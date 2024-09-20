@@ -84,9 +84,9 @@ fun ContactDataLayout(
     modifier: Modifier = Modifier
 ) {
     val latinAmericanCountries = listOf(
-        "Argentina", "Bolivia", "Brasil", "Chile", "Colombia", "Costa Rica", "Cuba",
-        "Ecuador", "El Salvador", "Guatemala", "Honduras", "México", "Nicaragua", "Panamá",
-        "Paraguay", "Perú", "República Dominicana", "Uruguay", "Venezuela"
+        "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Costa Rica", "Cuba",
+        "Ecuador", "El Salvador", "Guatemala", "Honduras", "Mexico", "Nicaragua", "Panama",
+        "Paraguay", "Peru", "Dominican Republic", "Uruguay", "Venezuela"
     )
 
     val colombianCities = listOf(
