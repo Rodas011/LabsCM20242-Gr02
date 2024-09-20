@@ -75,8 +75,15 @@ fun MyApp(
                         }},
                         viewModel = viewModel, submissionStatus = contactSubmissionStatus)
                 } else {
-                    Text(text = stringResource(R.string.end_form),
-                        style = MaterialTheme.typography.headlineLarge,)
+                    Column(
+                        modifier = modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = stringResource(R.string.end_form),
+                            style = MaterialTheme.typography.headlineLarge,)
+                    }
+
                 }
             }
         }

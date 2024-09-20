@@ -7,16 +7,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,7 +57,7 @@ fun ContactDataScreen(
                 onCountryChange = { viewModel.updateCountry(it) },
                 onCityChange = { viewModel.updateCity(it) },
                 snackbarHostState = snackbarHostState,
-                lab1ViewModel = viewModel,
+                viewModel = viewModel,
                 modifier = Modifier
             )
         }
@@ -79,7 +79,7 @@ fun ContactDataLayout(
     onCountryChange: (String) -> Unit,
     onCityChange: (String) -> Unit,
     snackbarHostState: SnackbarHostState,
-    lab1ViewModel: Lab1ViewModel = viewModel(),
+    viewModel: Lab1ViewModel,
     modifier: Modifier = Modifier
 ) {
     val latinAmericanCountries = listOf(
@@ -102,6 +102,7 @@ fun ContactDataLayout(
 
     Column(
         modifier = modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -109,11 +110,10 @@ fun ContactDataLayout(
     ) {
         Text(
             text = stringResource(R.string.contact_info),
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Start,
-            modifier = Modifier.padding(start = 10.dp)
+            style = MaterialTheme.typography.headlineLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-
 
         OutlinedTextField(
             value = phone,
@@ -141,7 +141,7 @@ fun ContactDataLayout(
             ),
             modifier = Modifier.fillMaxWidth()
         )
-
+        Spacer(modifier = Modifier.height(2.dp))
 
         OutlinedTextField(
             value = email,
@@ -159,7 +159,9 @@ fun ContactDataLayout(
                 }
         )
 
-        CountryDropdown(latinAmericanCountries,
+        CountryDropdown(
+            country,
+            latinAmericanCountries,
             onCountryChange,
             isError = isCountryTouched && country.isBlank(), // Check if country is blank
             supportingText = { if (isCountryTouched && country.isBlank()) Text(stringResource(R.string.required)) else null },
@@ -168,7 +170,7 @@ fun ContactDataLayout(
                 }
         )
 
-        CityDropdown(colombianCities, onCityChange)
+        CityDropdown(city, colombianCities, onCityChange)
         Spacer(modifier = Modifier.height(6.dp))
 
         Button(
@@ -177,6 +179,7 @@ fun ContactDataLayout(
         ){
             Text(text = stringResource(R.string._continue))
         }
+
         if (submissionStatus.isNotEmpty()) {
             val snackbarMessage = if (submissionStatus == "Success") {
                 stringResource(R.string.success_message)
@@ -204,6 +207,7 @@ fun ContactDataLayout(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryDropdown(
+    country: String,
     countries: List<String>,
     onCountrySelected: (String) -> Unit,
     isError: Boolean,
@@ -211,7 +215,7 @@ fun CountryDropdown(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selected by remember { mutableStateOf("") }
+    var selected = country
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
@@ -249,9 +253,13 @@ fun CountryDropdown(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CityDropdown(cities: List<String>, onCitySelected: (String) -> Unit) {
+fun CityDropdown(
+    city: String,
+    cities: List<String>,
+    onCitySelected: (String) -> Unit)
+{
     var expanded by remember { mutableStateOf(false) }
-    var selected by remember { mutableStateOf("") }
+    var selected = city
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }

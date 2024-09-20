@@ -3,7 +3,7 @@ package co.edu.udea.compumovil.gr02_20242.lab1
 import android.app.DatePickerDialog
 import android.content.res.Configuration
 import android.widget.DatePicker
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,19 +11,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
@@ -48,7 +48,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import java.util.Calendar
 
@@ -114,7 +113,6 @@ fun PersonalDataLayout(
 
     var manSelected by rememberSaveable { mutableStateOf(false) }
     var womanSelected by rememberSaveable { mutableStateOf(false) }
-    var sexSelected by rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -122,8 +120,12 @@ fun PersonalDataLayout(
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-    val SexOptions = listOf(stringResource(R.string.male), stringResource(R.string.female))
-    val Scholarities = listOf(stringResource(R.string.primary), stringResource(R.string.high_school), stringResource(R.string.college),)
+    val sexOptions = listOf(stringResource(R.string.male), stringResource(R.string.female))
+    val scholarities = listOf(
+        stringResource(R.string.primary),
+        stringResource(R.string.high_school),
+        stringResource(R.string.college)
+    )
 
     var isNameTouched by remember { mutableStateOf(false) }
     var isLastNameTouched by remember { mutableStateOf(false) }
@@ -131,34 +133,30 @@ fun PersonalDataLayout(
     var isBirthdateTouched by remember { mutableStateOf(false) }
     var isScholarityTouched by remember { mutableStateOf(false) }
 
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.personal_info),
+            style = MaterialTheme.typography.headlineLarge,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
-    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.form),
-                style = MaterialTheme.typography.headlineLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+        if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Row(
-                modifier = modifier
-                    .height(60.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ){
                 OutlinedTextField(
                     value = name,
                     onValueChange = onNameChanged,
-                    textStyle = MaterialTheme.typography.bodyMedium,
                     label = { Text(stringResource(R.string.name)) },
+                    textStyle = MaterialTheme.typography.bodyMedium,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,
                         keyboardType = KeyboardType.Text,
@@ -166,19 +164,19 @@ fun PersonalDataLayout(
 
                     isError = isNameTouched && name.isBlank(),
                     supportingText = { if (isNameTouched && name.isBlank()) Text(stringResource(R.string.required)) else null },
-                    modifier = Modifier.width(300.dp).padding(end = 16.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
                         .onFocusChanged { focusState ->
                             isNameTouched = focusState.isFocused || focusState.hasFocus
                         }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 OutlinedTextField(
                     value = lastName,
                     onValueChange = onLastNameChanged,
-                    textStyle = MaterialTheme.typography.bodyMedium,
                     label = { Text(stringResource(R.string.last_name)) },
+                    textStyle = MaterialTheme.typography.bodyMedium,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,
                         keyboardType = KeyboardType.Text,
@@ -186,186 +184,15 @@ fun PersonalDataLayout(
 
                     isError = isLastNameTouched && lastName.isBlank(),
                     supportingText = { if (isLastNameTouched && lastName.isBlank()) Text(stringResource(R.string.required)) else null },
-                    modifier = Modifier.width(300.dp).padding(end = 16.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
                         .onFocusChanged { focusState ->
                             isLastNameTouched = focusState.isFocused || focusState.hasFocus
                         }
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Row(
-                modifier = modifier
-                    .padding(horizontal = 16.dp)
-                    .height(56.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Sex",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 150.dp, end = 5.dp)
-                )
-
-                Text(
-                    text = stringResource(R.string.sex),
-                    style = MaterialTheme.typography.bodyLarge.merge(),
-                )
-
-                SexOptions.forEach { option ->
-
-                    RadioButton(
-                        selected = (option == sex),
-                        onClick = { onSexChanged(option) },
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-
-                    Text(
-                        text = option,
-                        style = MaterialTheme.typography.bodyMedium.merge(),
-                        modifier = Modifier.padding(start = 1.dp)
-                    )
-                }
-
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            val datePickerDialog = DatePickerDialog(
-                context,
-                { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                    // Actualizar la fecha seleccionada
-                    onBirthdateChanged("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
-                }, year, month, day
-            )
-
-            Row(
-                modifier = modifier
-                    .padding(horizontal = 150.dp)
-                    .height(56.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Date",
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(start = 10.dp, end = 5.dp)
-                )
-
-                Text(
-                    text = stringResource(R.string.birthdate),
-                    style = MaterialTheme.typography.bodyLarge.merge()
-                )
-
-                Button(
-                    onClick = { datePickerDialog.show() },
-                    modifier = Modifier.padding(start = 16.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.change),
-                        style = MaterialTheme.typography.bodyMedium,
-                        )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            var expanded by rememberSaveable() { mutableStateOf(false) }
-
-
-
-            Box(modifier = Modifier.width(300.dp).padding(start = 16.dp)) {
-
-
-
-                OutlinedButton(onClick = { expanded = true }) {
-                    Text(
-                        text =  stringResource(R.string.scholarity),
-                        style = MaterialTheme.typography.bodyLarge.merge(),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        modifier = Modifier.weight(
-                            1f,
-                        ),
-                    )
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-
-                }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    Scholarities.forEach {
-                        DropdownMenuItem(text = {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyMedium.merge(),
-                                )
-                        }, onClick = {
-                            expanded = false
-                            onScholarityChanged(it)
-                        })
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(3.dp))
-
-            Button(
-                onClick = onContinueClicked,
-                modifier = Modifier.width(150.dp).align(Alignment.End),
-            ) {
-                Text(
-                    stringResource(R.string._continue),
-                    style = MaterialTheme.typography.bodyMedium,
-                    )
-            }
-
-            if (manSelected) {
-                viewModel.updateSex(stringResource(R.string.male))
-            }
-            if (womanSelected) {
-                viewModel.updateSex(stringResource(R.string.female))
-            }
-
-            if (submissionStatus.isNotEmpty()) {
-                val snackbarMessage = if (submissionStatus == "Success") {
-                    stringResource(R.string.success_message)
-                } else {
-                    stringResource(R.string.error_message)
-                }
-                if (submissionStatus == "Error") {
-                    isNameTouched = true
-                    isLastNameTouched = true
-                    isSexTouched = true
-                    isBirthdateTouched = true
-                    isScholarityTouched = true
-                }
-                LaunchedEffect(submissionStatus) {
-                    snackbarHostState.showSnackbar(
-                        message = snackbarMessage,
-                        duration = SnackbarDuration.Short
-                    )
-                }
-            }
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.form),
-                style = MaterialTheme.typography.headlineLarge,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
+        }else {
             OutlinedTextField(
                 value = name,
                 onValueChange = onNameChanged,
@@ -378,13 +205,12 @@ fun PersonalDataLayout(
 
                 isError = isNameTouched && name.isBlank(),
                 supportingText = { if (isNameTouched && name.isBlank()) Text(stringResource(R.string.required)) else null },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .onFocusChanged { focusState ->
                         isNameTouched = focusState.isFocused || focusState.hasFocus
                     }
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = lastName,
@@ -398,166 +224,180 @@ fun PersonalDataLayout(
 
                 isError = isLastNameTouched && lastName.isBlank(),
                 supportingText = { if (isLastNameTouched && lastName.isBlank()) Text(stringResource(R.string.required)) else null },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .onFocusChanged { focusState ->
                         isLastNameTouched = focusState.isFocused || focusState.hasFocus
                     }
             )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = modifier
-                    .padding(horizontal = 16.dp)
-                    .height(56.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Sex",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 1.dp, end = 5.dp)
-                )
-
-                Text(
-                    text = stringResource(R.string.sex),
-                    style = MaterialTheme.typography.bodyLarge.merge(),
-
-                )
-
-                SexOptions.forEach { option ->
-
-                    RadioButton(
-                        selected = (option == sex),
-                        onClick = { onSexChanged(option) },
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-
-                    Text(
-                        text = option,
-                        style = MaterialTheme.typography.bodyMedium.merge(),
-                        modifier = Modifier.padding(start = 1.dp)
-                    )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.then(
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    Modifier.align(Alignment.CenterHorizontally)
+                        .padding(horizontal = 16.dp)
+                        .height(56.dp)
+                } else {
+                    Modifier.padding(horizontal = 16.dp)
+                        .height(56.dp)
                 }
-
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val datePickerDialog = DatePickerDialog(
-                context,
-                { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-                    // Actualizar la fecha seleccionada
-                    onBirthdateChanged("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
-                }, year, month, day
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Sex",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 1.dp, end = 5.dp)
             )
 
-            Row(
-                modifier = modifier
-                    .padding(horizontal = 16.dp)
-                    .height(56.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Date",
-                    tint = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(start = 10.dp, end = 5.dp)
+            Text(
+                text = stringResource(R.string.sex),
+                style = MaterialTheme.typography.bodyLarge.merge(),
+
+                )
+
+            sexOptions.forEach { option ->
+
+                RadioButton(
+                    selected = (option == sex),
+                    onClick = { onSexChanged(option) },
+                    modifier = Modifier.padding(start = 16.dp)
                 )
 
                 Text(
-                    text = stringResource(R.string.birthdate),
-                    style = MaterialTheme.typography.bodyLarge.merge()
+                    text = option,
+                    style = MaterialTheme.typography.bodyMedium.merge(),
+                    modifier = Modifier.padding(start = 1.dp)
                 )
-
-                Button(
-                    onClick = { datePickerDialog.show() },
-                    modifier = Modifier.padding(start = 16.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.change),
-                        style = MaterialTheme.typography.bodyMedium,
-                        )
-                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        }
 
-            var expanded by rememberSaveable() { mutableStateOf(false) }
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+                onBirthdateChanged("$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear")
+            }, year, month, day
+        )
 
-            Box(modifier = Modifier.fillMaxWidth()) {
-
-                OutlinedButton(onClick = { expanded = true }) {
-                    Text(
-                        text = stringResource(R.string.scholarity),
-                        style = MaterialTheme.typography.bodyLarge.merge(),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        modifier = Modifier.weight(
-                            1f,
-                        ),
-                    )
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.then(
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    Modifier.align(Alignment.CenterHorizontally)
+                        .padding(horizontal = 16.dp)
+                        .height(56.dp)
+                } else {
+                    Modifier.padding(horizontal = 16.dp)
+                        .height(56.dp)
                 }
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = "Date",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 1.dp, end = 5.dp)
+            )
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    Scholarities.forEach {
-                        DropdownMenuItem(text = {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyMedium.merge(),
-                                )
-                        }, onClick = {
-                            expanded = false
-                            onScholarityChanged(it)
-                        })
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.birthdate),
+                style = MaterialTheme.typography.bodyLarge.merge()
+            )
 
             Button(
-                onClick = onContinueClicked,
-                modifier = Modifier.fillMaxWidth()
+                onClick = { datePickerDialog.show() },
+                modifier = Modifier.padding(start = 16.dp)
             ) {
                 Text(
-                    stringResource(R.string._continue),
-                    style = MaterialTheme.typography.bodyMedium.merge(),
-                    )
+                    text = stringResource(R.string.change),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
+        }
 
-            if (manSelected) {
-                viewModel.updateSex("Hombre")
-            }
-            if (womanSelected) {
-                viewModel.updateSex("Mujer")
-            }
+        ScholarityDropdown(scholarity, scholarities, onScholarityChanged)
 
-            if (submissionStatus.isNotEmpty()) {
-                val snackbarMessage = if (submissionStatus == "Success") {
-                    stringResource(R.string.success_message)
-                } else {
-                    stringResource(R.string.error_message)
-                }
-                if (submissionStatus == "Error") {
-                    isNameTouched = true
-                    isLastNameTouched = true
-                    isSexTouched = true
-                    isBirthdateTouched = true
-                    isScholarityTouched = true
-                }
-                LaunchedEffect(submissionStatus) {
-                    snackbarHostState.showSnackbar(
-                        message = snackbarMessage,
-                        duration = SnackbarDuration.Short
-                    )
-                }
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Button(
+            onClick = onContinueClicked,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                stringResource(R.string._continue),
+                style = MaterialTheme.typography.bodyMedium.merge(),
+            )
+        }
+
+        if (manSelected) {
+            viewModel.updateSex("Hombre")
+        }
+        if (womanSelected) {
+            viewModel.updateSex("Mujer")
+        }
+
+        if (submissionStatus.isNotEmpty()) {
+            val snackbarMessage = if (submissionStatus == "Success") {
+                stringResource(R.string.success_message)
+            } else {
+                stringResource(R.string.error_message)
+            }
+            if (submissionStatus == "Error") {
+                isNameTouched = true
+                isLastNameTouched = true
+                isSexTouched = true
+                isBirthdateTouched = true
+                isScholarityTouched = true
+            }
+            LaunchedEffect(submissionStatus) {
+                snackbarHostState.showSnackbar(
+                    message = snackbarMessage,
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScholarityDropdown(
+    scholarity: String,
+    scholarities: List<String>,
+    onScholaritySelected: (String) -> Unit)
+{
+    var expanded by remember { mutableStateOf(false) }
+    var selected = scholarity
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = selected,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(stringResource(R.string.scholarity)) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            scholarities.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(item) },
+                    onClick = {
+                        onScholaritySelected(item)
+                        selected = item
+                        expanded = false
+                    }
+                )
             }
         }
     }
