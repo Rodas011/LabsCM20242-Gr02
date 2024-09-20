@@ -38,6 +38,8 @@ class Lab1ViewModel : ViewModel() {
         private set
     var city by mutableStateOf("")
         private set
+    var cities by mutableStateOf(emptyList<String>())
+        private set
 
     fun updateName(nameUpdate: String){
         name = nameUpdate
@@ -65,6 +67,15 @@ class Lab1ViewModel : ViewModel() {
     }
     fun updateCountry(countryUpdate: String) {
         country = countryUpdate
+        sendRequest(country,
+            onResponse = { response ->
+                cities = response.data
+                Log.d("API Response", cities.toString())
+            },
+            onFailure = { error ->
+                Log.d("API Response", error.toString())
+            }
+        )
     }
     fun updateCity(cityUpdate: String) {
         city = cityUpdate

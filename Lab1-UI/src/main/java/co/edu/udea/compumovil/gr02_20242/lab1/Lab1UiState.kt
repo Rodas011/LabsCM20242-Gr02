@@ -14,5 +14,4 @@ data class Lab1UiState (
     val email: String = "",
     val country: String = "",
     val city: String = "",
-
 )

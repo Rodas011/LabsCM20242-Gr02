@@ -22,7 +22,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun ContactDataScreen(
@@ -51,11 +50,12 @@ fun ContactDataScreen(
                 email = viewModel.email,
                 country = viewModel.country,
                 city = viewModel.city,
-                onPhoneChange = { viewModel.updatePhone(it) },
-                onAddressChange = { viewModel.updateAddress(it) },
-                onEmailChange = { viewModel.updateEmail(it) },
-                onCountryChange = { viewModel.updateCountry(it) },
-                onCityChange = { viewModel.updateCity(it) },
+                cities = viewModel.cities,
+                onPhoneChanged = { viewModel.updatePhone(it) },
+                onAddressChanged = { viewModel.updateAddress(it) },
+                onEmailChanged = { viewModel.updateEmail(it) },
+                onCountryChanged = { viewModel.updateCountry(it) },
+                onCityChanged = { viewModel.updateCity(it) },
                 snackbarHostState = snackbarHostState,
                 viewModel = viewModel,
                 modifier = Modifier
@@ -72,12 +72,13 @@ fun ContactDataLayout(
     email: String,
     country: String,
     city: String,
+    cities: List<String>,
     onContinueClicked: () -> Unit,
-    onPhoneChange: (String) -> Unit,
-    onAddressChange: (String) -> Unit,
-    onEmailChange: (String) -> Unit,
-    onCountryChange: (String) -> Unit,
-    onCityChange: (String) -> Unit,
+    onPhoneChanged: (String) -> Unit,
+    onAddressChanged: (String) -> Unit,
+    onEmailChanged: (String) -> Unit,
+    onCountryChanged: (String) -> Unit,
+    onCityChanged: (String) -> Unit,
     snackbarHostState: SnackbarHostState,
     viewModel: Lab1ViewModel,
     modifier: Modifier = Modifier
@@ -117,7 +118,7 @@ fun ContactDataLayout(
 
         OutlinedTextField(
             value = phone,
-            onValueChange = onPhoneChange,
+            onValueChange = onPhoneChanged,
             label = { Text(stringResource(R.string.phone)) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Phone,
@@ -133,7 +134,7 @@ fun ContactDataLayout(
 
         OutlinedTextField(
             value = address,
-            onValueChange = onAddressChange,
+            onValueChange = onAddressChanged,
             label = { Text(stringResource(R.string.address)) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
@@ -145,7 +146,7 @@ fun ContactDataLayout(
 
         OutlinedTextField(
             value = email,
-            onValueChange = onEmailChange,
+            onValueChange = onEmailChanged,
             label = { Text(stringResource(R.string.email)) },
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
@@ -162,7 +163,7 @@ fun ContactDataLayout(
         CountryDropdown(
             country,
             latinAmericanCountries,
-            onCountryChange,
+            onCountryChanged,
             isError = isCountryTouched && country.isBlank(), // Check if country is blank
             supportingText = { if (isCountryTouched && country.isBlank()) Text(stringResource(R.string.required)) else null },
             modifier = Modifier.onFocusChanged { focusState ->
@@ -170,7 +171,7 @@ fun ContactDataLayout(
                 }
         )
 
-        CityDropdown(city, colombianCities, onCityChange)
+        CityDropdown(city, cities, onCityChanged)
         Spacer(modifier = Modifier.height(6.dp))
 
         Button(
@@ -215,16 +216,26 @@ fun CountryDropdown(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selected = country
+    var filteredCountries by remember { mutableStateOf(countries) }
+    var selectedText by remember { mutableStateOf(country) }
+
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selected,
-            onValueChange = {},
-            readOnly = true,
+            value = selectedText,
+            onValueChange = { text ->
+                selectedText = text
+                filteredCountries = countries
+                    .filter { it.startsWith(text, ignoreCase = true) }
+                    .sorted()
+            },
             label = { Text(stringResource(R.string.country)) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             isError = isError,
             supportingText = supportingText,
@@ -237,11 +248,11 @@ fun CountryDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            countries.forEach { item ->
+            filteredCountries.forEach { item ->
                 DropdownMenuItem(
                     text = { Text(item) },
                     onClick = {
-                        selected = item
+                        selectedText = item
                         expanded = false
                         onCountrySelected(item)
                     }
@@ -259,16 +270,26 @@ fun CityDropdown(
     onCitySelected: (String) -> Unit)
 {
     var expanded by remember { mutableStateOf(false) }
-    var selected = city
+    var filteredCities by remember { mutableStateOf(cities) }
+    var selectedText by remember { mutableStateOf(city) }
+
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selected,
-            onValueChange = {},
-            readOnly = true,
+            value = selectedText,
+            onValueChange = { text ->
+                selectedText = text
+                filteredCities = cities
+                    .filter { it.startsWith(text, ignoreCase = true) }
+                    .sorted()
+            },
             label = { Text(stringResource(R.string.city)) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor()
@@ -278,11 +299,11 @@ fun CityDropdown(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            cities.forEach { item ->
+            filteredCities.forEach { item ->
                 DropdownMenuItem(
                     text = { Text(item) },
                     onClick = {
-                        selected = item
+                        selectedText = item
                         expanded = false
                         onCitySelected(item)
                     }
@@ -291,4 +312,3 @@ fun CityDropdown(
         }
     }
 }
-
